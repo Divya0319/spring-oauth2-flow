@@ -1,11 +1,13 @@
 package com.dailycodebuffer.oauthserver.service;
 
-import com.dailycodebuffer.oauthserver.entity.User;
+import com.dailycodebuffer.oauthserver.entity.AppUser;
+import com.dailycodebuffer.oauthserver.entity.Status;
 import com.dailycodebuffer.oauthserver.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,15 +33,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        AppUser user = userRepository.findByUsername(username);
         if(user == null) {
             throw  new UsernameNotFoundException("No User Found");
         }
-        return new org.springframework.security.core.userdetails.User(
+
+        boolean userEnabled = user.getStatus() == Status.ACTIVE;
+        return new User(
                 user.getEmail(),
                 user.getPassword(),
-                user.isEnabled(),
+                userEnabled,
                 true,
                 true,
                 true,

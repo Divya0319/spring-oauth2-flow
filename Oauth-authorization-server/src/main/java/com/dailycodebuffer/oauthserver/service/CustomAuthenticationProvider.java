@@ -23,7 +23,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        UserDetails user= customUserDetailsService.loadUserByUsername(username);
+        UserDetails user = customUserDetailsService.loadUserByUsername(username);
         return checkPassword(user,password);
     }
 
